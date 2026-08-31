@@ -1,0 +1,68 @@
+basePath: /
+host: localhost:8080
+info:
+  contact: {}
+  description: API for PeaceStudio, including picture upload
+  title: PeaceStudio API
+  version: "1.0"
+paths:
+  /status/{id}:
+    get:
+      description: 'Returns the current state of a job: Waiting, Getting worked on,
+        Finished, or Failed'
+      parameters:
+      - description: Job ID returned from the upload response
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - text/plain
+      responses:
+        "200":
+          description: job status
+          schema:
+            type: string
+        "404":
+          description: job not found
+          schema:
+            type: string
+      summary: Check the status of an uploaded picture's job
+      tags:
+      - status
+  /upload:
+    post:
+      consumes:
+      - multipart/form-data
+      description: 'Upload an image file via multipart form (jpg, png, gif, webp only,
+        max 5MB) and choose one action: grayscale, blur, resize, or pixelate'
+      parameters:
+      - description: Picture to upload
+        in: formData
+        name: picture
+        required: true
+        type: file
+      - description: 'Action to apply: grayscale, blur, resize, or pixelate'
+        in: formData
+        name: action
+        required: true
+        type: string
+      produces:
+      - text/plain
+      responses:
+        "200":
+          description: picture uploaded successfully
+          schema:
+            type: string
+        "400":
+          description: bad request
+          schema:
+            type: string
+        "500":
+          description: server error
+          schema:
+            type: string
+      summary: Upload a picture and apply one action
+      tags:
+      - upload
+swagger: "2.0"
