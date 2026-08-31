@@ -6,10 +6,9 @@ info:
   title: PeaceStudio API
   version: "1.0"
 paths:
-  /status/{id}:
+  /result/{id}:
     get:
-      description: 'Returns the current state of a job: Waiting, Getting worked on,
-        Finished, or Failed'
+      description: Returns the actual image file once a job's status is Finished
       parameters:
       - description: Job ID returned from the upload response
         in: path
@@ -17,52 +16,17 @@ paths:
         required: true
         type: string
       produces:
-      - text/plain
+      - image/png
       responses:
         "200":
-          description: job status
+          description: processed image
           schema:
-            type: string
+            type: file
         "404":
-          description: job not found
+          description: job not found or not finished yet
           schema:
             type: string
-      summary: Check the status of an uploaded picture's job
+      summary: Fetch the processed picture for a finished job
       tags:
-      - status
-  /upload:
-    post:
-      consumes:
-      - multipart/form-data
-      description: 'Upload an image file via multipart form (jpg, png, gif, webp only,
-        max 5MB) and choose one action: grayscale, blur, resize, or pixelate'
-      parameters:
-      - description: Picture to upload
-        in: formData
-        name: picture
-        required: true
-        type: file
-      - description: 'Action to apply: grayscale, blur, resize, or pixelate'
-        in: formData
-        name: action
-        required: true
-        type: string
-      produces:
-      - text/plain
-      responses:
-        "200":
-          description: picture uploaded successfully
-          schema:
-            type: string
-        "400":
-          description: bad request
-          schema:
-            type: string
-        "500":
-          description: server error
-          schema:
-            type: string
-      summary: Upload a picture and apply one action
-      tags:
-      - upload
+      - result
 swagger: "2.0"

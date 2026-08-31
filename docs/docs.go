@@ -15,16 +15,16 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/status/{id}": {
+        "/result/{id}": {
             "get": {
-                "description": "Returns the current state of a job: Waiting, Getting worked on, Finished, or Failed",
+                "description": "Returns the actual image file once a job's status is Finished",
                 "produces": [
-                    "text/plain"
+                    "image/png"
                 ],
                 "tags": [
-                    "status"
+                    "result"
                 ],
-                "summary": "Check the status of an uploaded picture's job",
+                "summary": "Fetch the processed picture for a finished job",
                 "parameters": [
                     {
                         "type": "string",
@@ -36,64 +36,13 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "job status",
+                        "description": "processed image",
                         "schema": {
-                            "type": "string"
+                            "type": "file"
                         }
                     },
                     "404": {
-                        "description": "job not found",
-                        "schema": {
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "/upload": {
-            "post": {
-                "description": "Upload an image file via multipart form (jpg, png, gif, webp only, max 5MB) and choose one action: grayscale, blur, resize, or pixelate",
-                "consumes": [
-                    "multipart/form-data"
-                ],
-                "produces": [
-                    "text/plain"
-                ],
-                "tags": [
-                    "upload"
-                ],
-                "summary": "Upload a picture and apply one action",
-                "parameters": [
-                    {
-                        "type": "file",
-                        "description": "Picture to upload",
-                        "name": "picture",
-                        "in": "formData",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Action to apply: grayscale, blur, resize, or pixelate",
-                        "name": "action",
-                        "in": "formData",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "picture uploaded successfully",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "400": {
-                        "description": "bad request",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "500": {
-                        "description": "server error",
+                        "description": "job not found or not finished yet",
                         "schema": {
                             "type": "string"
                         }

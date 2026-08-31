@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PeaceStudio</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0A0B0E;
+    --surface:#14161B;
+    --surface-raised:#1B1E25;
+    --border:#282C35;
+    --border-strong:#3A3F4B;
+    --text:#EDEFF3;
+    --text-muted:#868D9C;
+    --cyan:#2EE6D6;
+    --magenta:#FF3DAE;
+    --gradient:linear-gradient(90deg,var(--cyan),var(--magenta));
+    --success:#3ECF8E;
+    --success-bg:#132420;
+    --danger:#FF4D6D;
+    --danger-bg:#2A1519;
+    --warning:#FFB020;
+    --warning-bg:#2A2013;
+    --radius:10px;
+    --radius-lg:16px;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+  }
+
+  .app{
+    max-width:1600px;
+    margin:0 auto;
+    padding:2rem 2.5rem 4rem;
+  }
+  @media (max-width:900px){
+    .app{padding:1.5rem 1.25rem 3rem;}
+  }
+
+  header{margin-bottom:2rem;}
+  .brand{
+    display:flex;
+    align-items:baseline;
+    gap:0.65rem;
+    margin-bottom:0.4rem;
+  }
+  .brand i{
+    background:var(--gradient);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    font-size:1.4rem;
+  }
+  h1{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:600;
+    font-size:1.9rem;
+    margin:0;
+    letter-spacing:-0.01em;
+  }
+  header p{
+    color:var(--text-muted);
+    margin:0;
+    font-size:0.95rem;
+    max-width:50ch;
+  }
+
+  .layout{
+    display:grid;
+    grid-template-columns:300px 1fr;
+    gap:2rem;
+    align-items:start;
+  }
+  @media (min-width:1400px){
+    .layout{grid-template-columns:340px 1fr;gap:2.5rem;}
+  }
+  @media (max-width:900px){
+    .layout{grid-template-columns:1fr;gap:1.5rem;}
+  }
+
+  .panel{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius-lg);
+    padding:1.5rem;
+    position:sticky;
+    top:2rem;
+  }
+  @media (max-width:900px){
+    .panel{position:static;}
+  }
+
+  .dropzone{
+    border:1.5px dashed var(--border-strong);
+    border-radius:var(--radius);
+    padding:2.25rem 1rem;
+    text-align:center;
+    cursor:pointer;
+    transition:border-color 0.15s ease, background 0.15s ease;
+  }
+  .dropzone:hover, .dropzone.dragover{
+    border-color:var(--cyan);
+    background:rgba(46,230,214,0.06);
+  }
+  .dropzone i{font-size:1.5rem;color:var(--text-muted);margin-bottom:0.6rem;display:block;}
+  .dropzone p{margin:0;font-size:0.9rem;color:var(--text-muted);}
+  .dropzone .file-name{color:var(--text);font-weight:500;margin-top:0.4rem;}
+  input[type="file"]{display:none;}
+
+  .field-label{
+    font-size:0.8rem;
+    color:var(--text-muted);
+    margin:1.5rem 0 0.6rem;
+  }
+
+  .effect-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:0.5rem;
+  }
+  .effect-btn{
+    display:flex;
+    align-items:center;
+    gap:0.5rem;
+    background:var(--surface-raised);
+    border:1px solid var(--border);
+    color:var(--text);
+    border-radius:var(--radius);
+    padding:0.6rem 0.7rem;
+    font-family:'Inter',sans-serif;
+    font-size:0.85rem;
+    cursor:pointer;
+    transition:border-color 0.15s ease, background 0.15s ease;
+  }
+  .effect-btn i{color:var(--text-muted);width:16px;text-align:center;}
+  .effect-btn:hover{border-color:var(--border-strong);}
+  .effect-btn.active{
+    border-color:var(--cyan);
+    background:rgba(46,230,214,0.08);
+  }
+  .effect-btn.active i{color:var(--cyan);}
+
+  .upload-btn{
+    width:100%;
+    margin-top:1.5rem;
+    background:var(--gradient);
+    color:#06181A;
+    border:none;
+    border-radius:var(--radius);
+    padding:0.75rem 1rem;
+    font-family:'Inter',sans-serif;
+    font-weight:600;
+    font-size:0.9rem;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:0.5rem;
+    transition:filter 0.15s ease, transform 0.1s ease;
+  }
+  .upload-btn:hover{filter:brightness(1.08);}
+  .upload-btn:active{transform:scale(0.99);}
+  .upload-btn:disabled{
+    background:var(--border);
+    color:var(--text-muted);
+    cursor:not-allowed;
+  }
+
+  .hint{
+    margin-top:0.75rem;
+    font-size:0.78rem;
+    color:var(--text-muted);
+  }
+
+  .queue-summary{
+    display:flex;
+    gap:0.9rem;
+    margin-bottom:1.5rem;
+  }
+  .summary-card{
+    flex:1;
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:0.9rem 1rem;
+    text-align:center;
+  }
+  .summary-card .count{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:600;
+    font-size:1.6rem;
+    display:block;
+  }
+  .summary-card .label{
+    font-size:0.75rem;
+    color:var(--text-muted);
+  }
+
+  .contact-sheet{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(420px, 1fr));
+    gap:1.25rem;
+  }
+  @media (min-width:1400px){
+    .contact-sheet{grid-template-columns:repeat(auto-fill, minmax(520px, 1fr));gap:1.6rem;}
+  }
+  @media (max-width:600px){
+    .contact-sheet{grid-template-columns:1fr;}
+  }
+
+  .empty-state{
+    grid-column:1 / -1;
+    background:var(--surface);
+    border:1px dashed var(--border);
+    border-radius:var(--radius-lg);
+    padding:3rem 1rem;
+    text-align:center;
+    color:var(--text-muted);
+  }
+  .empty-state i{font-size:1.5rem;margin-bottom:0.6rem;display:block;}
+  .empty-state p{margin:0;font-size:0.9rem;}
+
+  .job-card{
+    background:var(--surface);
+    border:1px solid var(--border);
+    border-radius:var(--radius-lg);
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+  }
+
+  .compare-wrap{
+    position:relative;
+    width:100%;
+    aspect-ratio:4/3;
+    background:var(--surface-raised);
+    overflow:hidden;
+  }
+  .compare-wrap img{
+    position:absolute;inset:0;
+    width:100%;height:100%;
+    object-fit:cover;
+    display:block;
+    -webkit-user-select:none;user-select:none;
+  }
+  .img-original{z-index:1;}
+  .compare-mask{
+    position:absolute;inset:0;
+    overflow:hidden;
+    z-index:2;
+    clip-path:inset(0 50% 0 0);
+  }
+  .compare-mask img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+  .compare-line{
+    position:absolute;top:0;bottom:0;left:50%;
+    width:2px;
+    background:var(--gradient);
+    z-index:4;
+    pointer-events:none;
+    transform:translateX(-1px);
+  }
+  .compare-handle{
+    position:absolute;top:50%;left:50%;
+    width:30px;height:30px;
+    border-radius:50%;
+    background:var(--surface);
+    border:1.5px solid var(--cyan);
+    display:flex;align-items:center;justify-content:center;
+    transform:translate(-50%,-50%);
+    z-index:4;
+    pointer-events:none;
+    color:var(--cyan);
+    font-size:0.7rem;
+  }
+  .compare-slider{
+    position:absolute;inset:0;
+    width:100%;height:100%;
+    margin:0;
+    opacity:0;
+    cursor:ew-resize;
+    z-index:5;
+  }
+  .compare-tag{
+    position:absolute;
+    top:0.6rem;
+    font-size:0.68rem;
+    letter-spacing:0.02em;
+    background:rgba(10,11,14,0.75);
+    color:var(--text);
+    padding:0.2rem 0.55rem;
+    border-radius:999px;
+    z-index:3;
+    pointer-events:none;
+  }
+  .tag-before{left:0.6rem;}
+  .tag-after{right:0.6rem;}
+
+  .visual-scrim{
+    position:absolute;inset:0;
+    background:rgba(10,11,14,0.55);
+    display:flex;align-items:center;justify-content:center;
+    z-index:6;
+  }
+  .visual-scrim i{font-size:1.4rem;color:var(--cyan);}
+  .visual-scrim.failed{background:rgba(42,21,25,0.7);}
+  .visual-scrim.failed i{color:var(--danger);}
+  .visual-scrim i.fa-spinner{animation:spin 0.9s linear infinite;}
+  @media (prefers-reduced-motion: reduce){
+    .visual-scrim i.fa-spinner{animation:none;}
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  .job-body{
+    padding:0.85rem 1rem;
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:0.6rem;
+  }
+  .job-info .fname{
+    font-size:0.87rem;
+    font-weight:500;
+    word-break:break-word;
+  }
+  .job-info .faction{
+    font-size:0.78rem;
+    color:var(--text-muted);
+    margin-top:0.15rem;
+  }
+
+  .status-pill{
+    font-size:0.72rem;
+    padding:0.28rem 0.6rem;
+    border-radius:999px;
+    display:flex;
+    align-items:center;
+    gap:0.3rem;
+    white-space:nowrap;
+    flex-shrink:0;
+  }
+  .status-pill.waiting{background:var(--warning-bg);color:var(--warning);}
+  .status-pill.processing{background:rgba(46,230,214,0.1);color:var(--cyan);}
+  .status-pill.finished{background:var(--success-bg);color:var(--success);}
+  .status-pill.failed{background:var(--danger-bg);color:var(--danger);}
+  .status-pill.processing i{animation:spin 0.9s linear infinite;}
+  @media (prefers-reduced-motion: reduce){
+    .status-pill.processing i{animation:none;}
+  }
+
+  .job-footer{padding:0 1rem 1rem;}
+  .job-action{
+    width:100%;
+    background:var(--surface-raised);
+    border:1px solid var(--border);
+    color:var(--text);
+    border-radius:8px;
+    padding:0.5rem 0.7rem;
+    font-family:'Inter',sans-serif;
+    font-size:0.8rem;
+    cursor:pointer;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:0.4rem;
+  }
+  .job-action:hover{border-color:var(--border-strong);}
+  .job-action:disabled{
+    opacity:0.6;
+    cursor:not-allowed;
+  }
+
+  .toast-region{
+    position:fixed;
+    top:1.25rem;
+    right:1.25rem;
+    display:flex;
+    flex-direction:column;
+    gap:0.6rem;
+    z-index:100;
+  }
+  .toast{
+    background:var(--surface-raised);
+    border:1px solid var(--border);
+    border-left:3px solid var(--cyan);
+    border-radius:8px;
+    padding:0.7rem 1rem;
+    font-size:0.85rem;
+    display:flex;
+    align-items:center;
+    gap:0.6rem;
+    min-width:230px;
+    max-width:320px;
+    box-shadow:0 8px 24px rgba(0,0,0,0.45);
+    animation:slideIn 0.2s ease-out;
+  }
+  .toast.success{border-left-color:var(--success);}
+  .toast.error{border-left-color:var(--danger);}
+  .toast i{font-size:0.95rem;}
+  .toast.success i{color:var(--success);}
+  .toast.error i{color:var(--danger);}
+  .toast:not(.success):not(.error) i{color:var(--cyan);}
+
+  @keyframes slideIn{
+    from{transform:translateX(20px);opacity:0;}
+    to{transform:translateX(0);opacity:1;}
+  }
+  @media (prefers-reduced-motion: reduce){
+    .toast{animation:none;}
+  }
+
+  button:focus-visible, .dropzone:focus-visible, .effect-btn:focus-visible, .compare-slider:focus-visible{
+    outline:2px solid var(--cyan);
+    outline-offset:2px;
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <header>
+    <div class="brand">
+      <i class="fa-solid fa-aperture" aria-hidden="true"></i>
+      <h1>PeaceStudio</h1>
+    </div>
+    <p>Upload a picture, pick an effect, and drag the slider on any finished result to compare it against the original.</p>
+  </header>
+
+  <div class="layout">
+
+    <div class="panel">
+      <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Choose or drop an image to upload">
+        <i class="fa-solid fa-cloud-arrow-up" aria-hidden="true"></i>
+        <p>Drag a picture here, or click to choose one</p>
+        <p class="file-name" id="fileName"></p>
+      </div>
+      <input type="file" id="fileInput" accept=".jpg,.jpeg,.png,.gif,.webp">
+
+      <p class="field-label">Effect</p>
+      <div class="effect-grid" id="effectGrid">
+        <button class="effect-btn active" data-action="grayscale" type="button">
+          <i class="fa-solid fa-circle-half-stroke" aria-hidden="true"></i>Grayscale
+        </button>
+        <button class="effect-btn" data-action="blur" type="button">
+          <i class="fa-solid fa-water" aria-hidden="true"></i>Blur
+        </button>
+        <button class="effect-btn" data-action="resize" type="button">
+          <i class="fa-solid fa-expand" aria-hidden="true"></i>Resize
+        </button>
+        <button class="effect-btn" data-action="pixelate" type="button">
+          <i class="fa-solid fa-table-cells" aria-hidden="true"></i>Pixelate
+        </button>
+      </div>
+
+      <button class="upload-btn" id="uploadBtn" type="button" disabled>
+        <i class="fa-solid fa-bolt" aria-hidden="true"></i>Process image
+      </button>
+      <p class="hint">jpg, png, gif or webp. Max 5MB.</p>
+    </div>
+
+    <div>
+      <div class="queue-summary">
+        <div class="summary-card">
+          <span class="count" id="countWaiting">0</span>
+          <span class="label">Waiting</span>
+        </div>
+        <div class="summary-card">
+          <span class="count" id="countProcessing">0</span>
+          <span class="label">Processing</span>
+        </div>
+        <div class="summary-card">
+          <span class="count" id="countFinished">0</span>
+          <span class="label">Finished</span>
+        </div>
+      </div>
+
+      <div class="contact-sheet" id="contactSheet">
+        <div class="empty-state" id="emptyState">
+          <i class="fa-solid fa-images" aria-hidden="true"></i>
+          <p>Your processed pictures will show up here.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast-region" id="toastRegion" aria-live="polite"></div>
+
+<script>
+// ---- Configuration -----------------------------------------------------
+// Point this at your running Go server.
+const API_BASE = "http://localhost:8080";
+
+// The API spec provided covers POST /upload and GET /status/{id}, but no
+// endpoint was given for fetching the finished picture. This assumes a
+// GET /result/{id} route returning the processed file — update this if
+// your actual route is different.
+const RESULT_URL = (id) => `${API_BASE}/result/${id}`;
+// --------------------------------------------------------------------------
+
+const dropzone = document.getElementById('dropzone');
+const fileInput = document.getElementById('fileInput');
+const fileNameEl = document.getElementById('fileName');
+const uploadBtn = document.getElementById('uploadBtn');
+const effectGrid = document.getElementById('effectGrid');
+const contactSheet = document.getElementById('contactSheet');
+const emptyState = document.getElementById('emptyState');
+const toastRegion = document.getElementById('toastRegion');
+
+let selectedFile = null;
+let selectedAction = 'grayscale';
+const jobs = new Map(); // id -> { el, originalUrl, fileName, action }
+
+// ---- Effect picker -------------------------------------------------------
+effectGrid.addEventListener('click', (e) => {
+  const btn = e.target.closest('.effect-btn');
+  if (!btn) return;
+  effectGrid.querySelectorAll('.effect-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  selectedAction = btn.dataset.action;
+});
+
+// ---- File selection --------------------------------------------------
+dropzone.addEventListener('click', () => fileInput.click());
+dropzone.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInput.click(); }
+});
+['dragover','dragenter'].forEach(evt =>
+  dropzone.addEventListener(evt, (e) => { e.preventDefault(); dropzone.classList.add('dragover'); })
+);
+['dragleave','drop'].forEach(evt =>
+  dropzone.addEventListener(evt, (e) => { e.preventDefault(); dropzone.classList.remove('dragover'); })
+);
+dropzone.addEventListener('drop', (e) => {
+  const file = e.dataTransfer.files[0];
+  if (file) setFile(file);
+});
+fileInput.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (file) setFile(file);
+});
+
+function setFile(file) {
+  selectedFile = file;
+  fileNameEl.textContent = file.name;
+  uploadBtn.disabled = false;
+}
+
+// ---- Toasts ---------------------------------------------------------------
+function showToast(message, type = '', icon = 'fa-circle-info') {
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.innerHTML = `<i class="fa-solid ${icon}" aria-hidden="true"></i><span>${message}</span>`;
+  toastRegion.appendChild(toast);
+  setTimeout(() => toast.remove(), 4000);
+}
+
+// ---- Upload ----------------------------------------------------------
+uploadBtn.addEventListener('click', async () => {
+  if (!selectedFile) return;
+  uploadBtn.disabled = true;
+
+  const formData = new FormData();
+  formData.append('picture', selectedFile);
+  formData.append('action', selectedAction);
+
+  try {
+    const res = await fetch(`${API_BASE}/upload`, { method: 'POST', body: formData });
+    const text = await res.text();
+
+    if (!res.ok) {
+      showToast('Upload failed. Check the file and try again.', 'error', 'fa-triangle-exclamation');
+      uploadBtn.disabled = false;
+      return;
+    }
+
+    const idMatch = text.match(/job id:\s*([^\s,]+)/i);
+    const jobId = idMatch ? idMatch[1] : null;
+
+    if (!jobId) {
+      showToast('Uploaded, but no job id was returned.', 'error', 'fa-triangle-exclamation');
+      uploadBtn.disabled = false;
+      return;
+    }
+
+    showToast(`${selectedFile.name} uploaded`, 'success', 'fa-circle-check');
+    createJobCard(jobId, selectedFile, selectedAction);
+    pollStatus(jobId);
+
+    selectedFile = null;
+    fileNameEl.textContent = '';
+    fileInput.value = '';
+  } catch (err) {
+    showToast('Could not reach the server.', 'error', 'fa-plug-circle-xmark');
+  } finally {
+    uploadBtn.disabled = false;
+  }
+});
+
+// ---- Job cards --------------------------------------------------------
+function createJobCard(id, file, action) {
+  emptyState.style.display = 'none';
+
+  const originalUrl = URL.createObjectURL(file);
+
+  const card = document.createElement('div');
+  card.className = 'job-card';
+  card.dataset.jobId = id;
+
+  card.innerHTML = `
+    <div class="compare-wrap" data-role="visual">
+      <img class="img-original" src="${originalUrl}" alt="">
+      <div class="visual-scrim" data-role="scrim"><i class="fa-solid fa-clock" aria-hidden="true"></i></div>
+    </div>
+    <div class="job-body">
+      <div class="job-info">
+        <div class="fname">${file.name}</div>
+        <div class="faction">${capitalize(action)}</div>
+      </div>
+      <span class="status-pill waiting" data-role="status">
+        <i class="fa-solid fa-clock" aria-hidden="true"></i>Waiting
+      </span>
+    </div>
+    <div class="job-footer" data-role="footer"></div>
+  `;
+
+  contactSheet.prepend(card);
+  jobs.set(id, { el: card, originalUrl, fileName: file.name, action });
+  updateSummary();
+}
+
+function setCardStatus(id, state, note) {
+  const job = jobs.get(id);
+  if (!job) return;
+  const pill = job.el.querySelector('[data-role="status"]');
+  const scrim = job.el.querySelector('[data-role="scrim"]');
+  const footer = job.el.querySelector('[data-role="footer"]');
+  const visual = job.el.querySelector('[data-role="visual"]');
+
+  const map = {
+    'Waiting':            { cls: 'waiting',    icon: 'fa-clock',              label: 'Waiting' },
+    'Getting worked on':  { cls: 'processing', icon: 'fa-spinner',            label: 'Processing' },
+    'Finished':           { cls: 'finished',   icon: 'fa-circle-check',       label: 'Finished' },
+    'Failed':             { cls: 'failed',     icon: 'fa-circle-exclamation', label: 'Failed' },
+  };
+  const info = map[state] || { cls: 'waiting', icon: 'fa-clock', label: state };
+
+  pill.className = `status-pill ${info.cls}`;
+  pill.innerHTML = `<i class="fa-solid ${info.icon}" aria-hidden="true"></i>${info.label}`;
+
+  footer.innerHTML = '';
+
+  if (state === 'Waiting' || state === 'Getting worked on') {
+    scrim.className = 'visual-scrim';
+    scrim.innerHTML = `<i class="fa-solid ${info.icon}" aria-hidden="true"></i>`;
+  }
+
+  if (state === 'Finished') {
+    scrim.remove();
+
+    // The base <img class="img-original"> sits underneath and is always fully visible,
+    // so it now needs to hold the PROCESSED image. The mask on top (clipped by the
+    // slider, revealed on the left) holds the ORIGINAL. That's what makes "Before"
+    // (left tag) correctly show the original and "After" (right tag) correctly show
+    // the processed result — fixing the swapped before/after.
+    const baseImg = visual.querySelector('.img-original');
+    if (baseImg) baseImg.src = RESULT_URL(id);
+    buildCompareSlider(visual, job.originalUrl);
+
+    const btn = document.createElement('button');
+    btn.className = 'job-action';
+    btn.type = 'button';
+    btn.innerHTML = `<i class="fa-solid fa-download" aria-hidden="true"></i>Save result`;
+    btn.addEventListener('click', () => downloadResult(id, job, btn));
+    footer.appendChild(btn);
+
+    showToast(`${job.el.querySelector('.fname').textContent} is ready`, 'success', 'fa-circle-check');
+  }
+
+  if (state === 'Failed') {
+    scrim.className = 'visual-scrim failed';
+    scrim.innerHTML = `<i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i>`;
+
+    const btn = document.createElement('button');
+    btn.className = 'job-action';
+    btn.type = 'button';
+    btn.innerHTML = `<i class="fa-solid fa-rotate-right" aria-hidden="true"></i>Retry`;
+    btn.addEventListener('click', () => pollStatus(id));
+    footer.appendChild(btn);
+
+    showToast(note ? `Failed: ${note}` : 'A job failed.', 'error', 'fa-triangle-exclamation');
+  }
+
+  updateSummary();
+}
+
+// beforeUrl fills the clipped overlay on top (the ORIGINAL image). The base image
+// underneath (already in the DOM as .img-original) is set to the PROCESSED image
+// before this is called, so dragging the slider left reveals more of the original
+// and dragging right reveals more of the processed result.
+function buildCompareSlider(visualEl, beforeUrl) {
+  const mask = document.createElement('div');
+  mask.className = 'compare-mask';
+  mask.innerHTML = `<img src="${beforeUrl}" alt="">`;
+
+  const line = document.createElement('div');
+  line.className = 'compare-line';
+
+  const handle = document.createElement('div');
+  handle.className = 'compare-handle';
+  handle.innerHTML = `<i class="fa-solid fa-arrows-left-right" aria-hidden="true"></i>`;
+
+  const tagBefore = document.createElement('span');
+  tagBefore.className = 'compare-tag tag-before';
+  tagBefore.textContent = 'Before';
+
+  const tagAfter = document.createElement('span');
+  tagAfter.className = 'compare-tag tag-after';
+  tagAfter.textContent = 'After';
+
+  const slider = document.createElement('input');
+  slider.type = 'range';
+  slider.className = 'compare-slider';
+  slider.min = 0; slider.max = 100; slider.value = 50;
+  slider.setAttribute('aria-label', 'Compare before and after');
+
+  slider.addEventListener('input', () => {
+    const v = slider.value;
+    mask.style.clipPath = `inset(0 ${100 - v}% 0 0)`;
+    line.style.left = `${v}%`;
+    handle.style.left = `${v}%`;
+  });
+
+  visualEl.appendChild(mask);
+  visualEl.appendChild(line);
+  visualEl.appendChild(handle);
+  visualEl.appendChild(tagBefore);
+  visualEl.appendChild(tagAfter);
+  visualEl.appendChild(slider);
+}
+
+// ---- Download -------------------------------------------------------------
+// Fetches the processed image as a blob and saves it via a same-origin blob: URL,
+// so the browser actually downloads the file instead of just navigating to/viewing it
+// (an <a download> pointed straight at a cross-origin URL isn't reliably honored).
+async function downloadResult(id, job, btn) {
+  const originalHtml = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = `<i class="fa-solid fa-spinner" style="animation:spin 0.9s linear infinite" aria-hidden="true"></i>Saving...`;
+
+  try {
+    const res = await fetch(RESULT_URL(id));
+    if (!res.ok) throw new Error('download failed');
+    const blob = await res.blob();
+    const blobUrl = URL.createObjectURL(blob);
+
+    const a = document.createElement('a');
+    a.href = blobUrl;
+    a.download = buildDownloadName(job.fileName, job.action);
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(blobUrl);
+  } catch (err) {
+    showToast('Could not download the result.', 'error', 'fa-triangle-exclamation');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = originalHtml;
+  }
+}
+
+function buildDownloadName(fileName, action) {
+  const dot = fileName.lastIndexOf('.');
+  const base = dot !== -1 ? fileName.slice(0, dot) : fileName;
+  const ext = dot !== -1 ? fileName.slice(dot) : '';
+  return `${base}-${action}${ext}`;
+}
+
+function updateSummary() {
+  let waiting = 0, processing = 0, finished = 0;
+  jobs.forEach(({ el }) => {
+    const pill = el.querySelector('[data-role="status"]');
+    if (pill.classList.contains('waiting')) waiting++;
+    else if (pill.classList.contains('processing')) processing++;
+    else if (pill.classList.contains('finished')) finished++;
+  });
+  document.getElementById('countWaiting').textContent = waiting;
+  document.getElementById('countProcessing').textContent = processing;
+  document.getElementById('countFinished').textContent = finished;
+}
+
+// ---- Polling ------------------------------------------------------------
+async function pollStatus(id) {
+  try {
+    const res = await fetch(`${API_BASE}/status/${id}`);
+    if (res.status === 404) {
+      setCardStatus(id, 'Failed', 'job not found');
+      return;
+    }
+    const text = await res.text();
+    const stateMatch = text.match(/status:\s*([^,]+)/i);
+    const noteMatch = text.match(/note:\s*(.+)$/i);
+    const state = stateMatch ? stateMatch[1].trim() : 'Waiting';
+    const note = noteMatch ? noteMatch[1].trim() : null;
+
+    setCardStatus(id, state, note);
+
+    if (state !== 'Finished' && state !== 'Failed') {
+      setTimeout(() => pollStatus(id), 1500);
+    }
+  } catch (err) {
+    setCardStatus(id, 'Failed', 'could not reach server');
+  }
+}
+
+function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+</script>
+
+</body>
+</html>

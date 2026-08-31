@@ -28,13 +28,13 @@ func worker(id int) {
 
 		switch job.Action {
 		case "grayscale":
-			outputPath, err = ToGrayscale(job.FilePath)
+			outputPath, err = ToGrayscale(job.ID, job.FilePath)
 		case "blur":
-			outputPath, err = ToBlur(job.FilePath)
+			outputPath, err = ToBlur(job.ID, job.FilePath)
 		case "resize":
-			outputPath, err = ToResize(job.FilePath)
+			outputPath, err = ToResize(job.ID, job.FilePath)
 		case "pixelate":
-			outputPath, err = ToPixelate(job.FilePath)
+			outputPath, err = ToPixelate(job.ID, job.FilePath)
 		default:
 			note := fmt.Sprintf("unknown action: %s", job.Action)
 			fmt.Printf("worker %d %s\n", id, note)
@@ -50,6 +50,6 @@ func worker(id int) {
 		}
 
 		fmt.Printf("worker %d finished: %s\n", id, outputPath)
-		SetStatus(job.ID, "Finished", "")
+		SetFinished(job.ID, outputPath)
 	}
 }

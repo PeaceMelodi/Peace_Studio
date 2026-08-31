@@ -11,7 +11,13 @@ import (
 	"strings"
 )
 
-func ToGrayscale(srcPath string) (string, error) {
+func buildOutputPath(jobID string, action string, srcPath string) string {
+	ext := filepath.Ext(srcPath)
+	filename := jobID + "-" + action + ext
+	return filepath.Join("uploads", "processed", filename)
+}
+
+func ToGrayscale(jobID string, srcPath string) (string, error) {
 	srcFile, err := os.Open(srcPath)
 	if err != nil {
 		return "", err
@@ -33,8 +39,7 @@ func ToGrayscale(srcPath string) (string, error) {
 		}
 	}
 
-	filename := filepath.Base(srcPath)
-	dstPath := filepath.Join("uploads", "processed", filename)
+	dstPath := buildOutputPath(jobID, "grayscale", srcPath)
 
 	dstFile, err := os.Create(dstPath)
 	if err != nil {
@@ -57,7 +62,7 @@ func ToGrayscale(srcPath string) (string, error) {
 	return dstPath, nil
 }
 
-func ToBlur(srcPath string) (string, error) {
+func ToBlur(jobID string, srcPath string) (string, error) {
 	srcFile, err := os.Open(srcPath)
 	if err != nil {
 		return "", err
@@ -102,8 +107,7 @@ func ToBlur(srcPath string) (string, error) {
 		}
 	}
 
-	filename := filepath.Base(srcPath)
-	dstPath := filepath.Join("uploads", "processed", filename)
+	dstPath := buildOutputPath(jobID, "blur", srcPath)
 
 	dstFile, err := os.Create(dstPath)
 	if err != nil {
@@ -126,7 +130,7 @@ func ToBlur(srcPath string) (string, error) {
 	return dstPath, nil
 }
 
-func ToResize(srcPath string) (string, error) {
+func ToResize(jobID string, srcPath string) (string, error) {
 	srcFile, err := os.Open(srcPath)
 	if err != nil {
 		return "", err
@@ -144,8 +148,27 @@ func ToResize(srcPath string) (string, error) {
 	origWidth := bounds.Dx()
 	origHeight := bounds.Dy()
 
+	dstPath := buildOutputPath(jobID, "resize", srcPath)
+
 	if origWidth <= targetWidth {
-		return srcPath, nil
+		srcFile.Seek(0, 0)
+		dstFile, err := os.Create(dstPath)
+		if err != nil {
+			return "", err
+		}
+		defer dstFile.Close()
+		switch strings.ToLower(format) {
+		case "png":
+			err = png.Encode(dstFile, img)
+		case "gif":
+			err = gif.Encode(dstFile, img, nil)
+		default:
+			err = jpeg.Encode(dstFile, img, nil)
+		}
+		if err != nil {
+			return "", err
+		}
+		return dstPath, nil
 	}
 
 	targetHeight := origHeight * targetWidth / origWidth
@@ -159,9 +182,6 @@ func ToResize(srcPath string) (string, error) {
 			resizedImg.Set(x, y, img.At(srcX, srcY))
 		}
 	}
-
-	filename := filepath.Base(srcPath)
-	dstPath := filepath.Join("uploads", "processed", filename)
 
 	dstFile, err := os.Create(dstPath)
 	if err != nil {
@@ -184,7 +204,7 @@ func ToResize(srcPath string) (string, error) {
 	return dstPath, nil
 }
 
-func ToPixelate(srcPath string) (string, error) {
+func ToPixelate(jobID string, srcPath string) (string, error) {
 	srcFile, err := os.Open(srcPath)
 	if err != nil {
 		return "", err
@@ -240,8 +260,7 @@ func ToPixelate(srcPath string) (string, error) {
 		}
 	}
 
-	filename := filepath.Base(srcPath)
-	dstPath := filepath.Join("uploads", "processed", filename)
+	dstPath := buildOutputPath(jobID, "pixelate", srcPath)
 
 	dstFile, err := os.Create(dstPath)
 	if err != nil {
